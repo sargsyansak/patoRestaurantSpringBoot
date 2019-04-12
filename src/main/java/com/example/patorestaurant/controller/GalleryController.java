@@ -7,6 +7,8 @@ import com.example.patorestaurant.repository.GalleryRepository;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -22,6 +24,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 public class GalleryController {
@@ -33,11 +38,24 @@ public class GalleryController {
     private GalleryRepository galleryRepository;
 
     @GetMapping("/gallery")
-    public String openGallery(ModelMap modelMap) {
+    public String openGallery(ModelMap modelMap,
+                              @RequestParam("page") Optional<Integer> page,
+                              @RequestParam("size") Optional<Integer> size) {
         List<GalleryCategories> allCat = galleryCategoriesRepository.findAll();
         List<Gallery> allImg = galleryRepository.findAll();
         modelMap.addAttribute("galleryCat", allCat);
         modelMap.addAttribute("galleryImg", allImg);
+        int currentPage = page.orElse(1);
+        int pageSize = size.orElse(5);
+        Page<Gallery> all = galleryRepository.findAll(PageRequest.of(currentPage - 1, pageSize));
+        modelMap.addAttribute("galleryPage", all);
+        int totalPages = all.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            modelMap.addAttribute("pageNumbers", pageNumbers);
+        }
         return "gallery";
     }
 

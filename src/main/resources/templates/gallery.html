@@ -213,7 +213,7 @@
     </div>
 
     <div class="wrap-gallery isotope-grid flex-w p-l-25 p-r-25">
-        <div th:each="image:${galleryImg}">
+        <div th:each="image:${galleryPage}">
             <!-- - -->
             <div th:class="'item-gallery isotope-item bo-rad-10 hov-img-zoom '+${image.category.name}">
                 <img th:src="@{/gallery/getImage(imgGallery=${image.galleryPicUrl})}" alt="IMG-GALLERY">
@@ -227,10 +227,15 @@
         </div>
     </div>
 
-    <div class="pagination flex-c-m flex-w p-l-15 p-r-15 m-t-24 m-b-50">
-        <a href="#" class="item-pagination flex-c-m trans-0-4 active-pagination">1</a>
-        <a href="#" class="item-pagination flex-c-m trans-0-4">2</a>
-        <a href="#" class="item-pagination flex-c-m trans-0-4">3</a>
+    <!--<div class="pagination flex-c-m flex-w p-l-15 p-r-15 m-t-24 m-b-50">-->
+    <!--<a href="#" class="item-pagination flex-c-m trans-0-4 active-pagination">1</a>-->
+    <!--</div>-->
+
+    <div th:if="${galleryPage.totalPages > 0}"
+         class="pagination flex-c-m flex-w p-l-15 p-r-15 m-t-24 m-b-50">
+            <a th:each="pageNumber : ${pageNumbers}" th:href="@{/gallery(size=${galleryPage.size}, page=${pageNumber})}"
+               th:text="${pageNumber}"
+               th:class="${pageNumber==galleryPage.number + 1} ? 'item-pagination flex-c-m trans-0-4 active-pagination'"></a>
     </div>
 </div>
 
@@ -469,6 +474,12 @@
 <script type="f70f76b895e37f30542ac0fa-text/javascript" src="vendor/parallax100/parallax100.js"></script>
 <script type="f70f76b895e37f30542ac0fa-text/javascript">
         $('.parallax100').parallax100();
+
+
+
+
+
+
 
 
 
